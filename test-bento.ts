@@ -57,36 +57,30 @@ async function main() {
     }
   });
 
-  console.log("Minting tokens...");
-  try {
-    await authedSdk.autoMint.mint();
-  } catch (e) {}
+  // console.log("Minting tokens...");
+  // skip minting
 
-  const startTime = new Date(Date.now() + 65 * 60 * 1000).toISOString();
+  const startTime = new Date(Date.now() + 8 * 60 * 1000).toISOString();
   const endTime = new Date(Date.now() + 186400000).toISOString();
   const claim = "Test Claim";
 
-  console.log("Creating parent market...");
+  console.log("Creating duel...");
   try {
-    const podResult = await authedSdk.user.createParentMarket({
-      parentQuestion: claim,
-      category: "Football",
-      startTime: startTime,
-      endTime: endTime,
-      privacyAccess: "private",
-      markets: [
-        {
-          question: claim,
-          type: "prediction",
-          category: "Football",
-          optionA: "Yes",
-          optionB: "No",
-          privacyAccess: "private",
-          collateralMode: "usdc",
-        },
-      ],
-    });
-    console.log("Success:", podResult.raw);
+    const duelResult = await authedSdk.user.createDuel(
+      {
+        question: claim,
+        type: "prediction",
+        category: "Football",
+        optionA: "Yes",
+        optionB: "No",
+        startTime: startTime,
+        endTime,
+        privacyAccess: "private",
+        collateralMode: "credits",
+      },
+      { requestId: `duel-${Date.now()}` }
+    );
+    console.log("Success:", duelResult.raw);
   } catch (e: any) {
     console.log("Caught SDK Exception:", e.message);
   }
