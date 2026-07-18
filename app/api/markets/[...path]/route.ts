@@ -13,11 +13,13 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const upstreamUrl = new URL(`${BENTO_BASE_URL}/${path.join("/")}`);
   upstreamUrl.search = incomingUrl.search;
 
-  const headers = new Headers(request.headers);
-  headers.delete("host");
-  headers.delete("content-length");
-  headers.delete("origin");
-  headers.delete("referer");
+  const headers = new Headers();
+  if (request.headers.has("content-type")) {
+    headers.set("content-type", request.headers.get("content-type")!);
+  }
+  if (request.headers.has("authorization")) {
+    headers.set("authorization", request.headers.get("authorization")!);
+  }
   headers.set("x-builder-api-key", BUILDER_KEY);
 
   const method = request.method;

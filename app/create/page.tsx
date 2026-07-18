@@ -150,7 +150,7 @@ export default function CreateCallout() {
       });
       setResult({ duelId, inviteCode, inviteLink });
       setDemoFallback(true);
-      setError(null);
+      setError(`Bento Error: ${formatBentoError(e)}`);
     } finally {
       setLoading(false);
     }
