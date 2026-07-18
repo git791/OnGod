@@ -42,7 +42,7 @@ export default function CreateCallout() {
   const [demoFallback, setDemoFallback] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const minDeadline = new Date(Date.now() + 35 * 60 * 1000)
+  const minDeadline = new Date(Date.now() + 60 * 60 * 1000)
     .toISOString()
     .slice(0, 16);
 
@@ -62,8 +62,8 @@ export default function CreateCallout() {
 
     const nowMs = Date.now();
     const selectedMs = new Date(deadline).getTime();
-    if (selectedMs < nowMs + 32 * 60 * 1000) {
-      setError("Deadline must be at least 35 minutes from now (Bento network requirement).");
+    if (selectedMs < nowMs + 60 * 60 * 1000) {
+      setError("Deadline must be at least 1 hour from now (Bento network requirement).");
       return;
     }
 
@@ -73,39 +73,34 @@ export default function CreateCallout() {
 
     try {
       const sdk = createAuthedSdk(jwt);
-      const startTime = new Date(Date.now() + 8 * 60 * 1000).toISOString();
+      // Bento on-chain minimum for private markets is ~30 min ahead.
+      // Using 32 min for a safe buffer — values near the floor revert
+      // in pre-flight simulation (source: docs.bento.fun/guides/create-market).
+      const startTime = new Date(Date.now() + 32 * 60 * 1000).toISOString();
       const endTime = new Date(deadline).toISOString();
 
-      const timeoutMs = 5000;
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error("Bento network timeout")), timeoutMs)
+      await mintTestCredits(jwt, walletAddress);
+
+      const duelResult = await sdk.user.createDuel(
+        {
+          question: claim,
+          type: "prediction" as const,
+          category: "Football",
+          optionA: "Yes",
+          optionB: "No",
+          startTime: startTime,
+          endTime,
+          privacyAccess: "private",
+          collateralMode: "credits" as const,
+        },
+        { requestId: `duel-${Date.now()}` }
       );
 
-      // Run minting with a strict timeout
-      await Promise.race([
-        mintTestCredits(jwt, walletAddress),
-        timeoutPromise
-      ]);
-
-      const duelResult = (await Promise.race([
-        sdk.user.createDuel(
-          {
-            question: claim,
-            type: "prediction" as const,
-            category: "Football",
-            optionA: "Yes",
-            optionB: "No",
-            startTime: startTime,
-            endTime,
-            privacyAccess: "private",
-            collateralMode: "credits" as const,
-          },
-          { requestId: `duel-${Date.now()}` }
-        ),
-        timeoutPromise
-      ])) as any;
-
-      const raw = duelResult.raw;
+      // Response is MutationAccepted — raw is CreateDuelResponseDto
+      const raw = duelResult.raw as typeof duelResult.raw & {
+        inviteCode?: string;
+        walletAddress?: string;
+      };
       const duelId = raw.duelId;
       let inviteCode = raw.inviteCode;
       if (!duelId) throw new Error("No duelId returned");
