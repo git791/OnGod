@@ -1,5 +1,10 @@
 import { NextRequest } from "next/server";
 
+// Tell Vercel to allow up to 60 seconds for this route.
+// Default is 10s which causes Bento on-chain transactions to time out.
+export const maxDuration = 60;
+
+
 const BENTO_BASE_URL = process.env.NEXT_PUBLIC_BENTO_BASE_URL ?? "https://internal-server.bento.fun";
 const BUILDER_KEY = process.env.BENTO_BUILDER_API_KEY ?? process.env.NEXT_PUBLIC_BENTO_BUILDER_KEY;
 
