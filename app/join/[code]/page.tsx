@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { useStore } from "@/lib/store";
-import { bentoPublic, createAuthedSdk } from "@/lib/bento";
+import { getBentoPublic, createAuthedSdk } from "@/lib/bento";
 import { startBentoConnect } from "@/lib/bento-link";
 
 export default function JoinPage() {
@@ -48,7 +48,7 @@ export default function JoinPage() {
         let parentDuelId: string | undefined;
         if (parentMarketId) {
           try {
-            const pod = await bentoPublic.public.parentMarkets.getById(
+            const pod = await getBentoPublic().public.parentMarkets.getById(
               parentMarketId!,
               { inviteCode: code }
             );

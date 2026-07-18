@@ -12,13 +12,24 @@ const TOURNAMENTS_URL = isClient
 
 const API_KEY = process.env.NEXT_PUBLIC_BENTO_BUILDER_KEY ?? "";
 
-export const bentoPublic = createBentoSdk({
-  baseUrl: BASE_URL,
-  tournamentsBaseUrl: TOURNAMENTS_URL,
-  apiKey: API_KEY,
-  auth: walletAuthProvider(() => ({})),
-  fetch: (...args: Parameters<typeof fetch>) => fetch(...args),
-});
+let publicSdk: ReturnType<typeof createBentoSdk> | null = null;
+
+/**
+ * Creates the public client only in response to browser-side app work. This
+ * keeps Next.js from requiring the public Builder key while prerendering pages.
+ */
+export function getBentoPublic() {
+  if (!publicSdk) {
+    publicSdk = createBentoSdk({
+      baseUrl: BASE_URL,
+      tournamentsBaseUrl: TOURNAMENTS_URL,
+      apiKey: API_KEY,
+      auth: walletAuthProvider(() => ({})),
+      fetch: (...args: Parameters<typeof fetch>) => fetch(...args),
+    });
+  }
+  return publicSdk;
+}
 
 /**
  * Create an authed SDK instance.

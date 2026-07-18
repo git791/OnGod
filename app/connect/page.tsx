@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { bentoPublic } from "@/lib/bento";
+import { getBentoPublic } from "@/lib/bento";
 import { consumeBentoConnectState } from "@/lib/bento-link";
 import { useStore } from "@/lib/store";
 
@@ -24,7 +24,7 @@ export default function BentoConnectCallback() {
       }
 
       try {
-        const session = await bentoPublic.public.externalLink.exchange({ code });
+        const session = await getBentoPublic().public.externalLink.exchange({ code });
         setAuth(session.token, session.address);
         router.replace(next.startsWith("/") ? next : "/");
       } catch (cause) {

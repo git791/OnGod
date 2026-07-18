@@ -1,4 +1,4 @@
-import { bentoPublic } from "./bento";
+import { getBentoPublic } from "./bento";
 
 const CONNECT_STATE_KEY = "ongod-bento-connect-state";
 
@@ -9,7 +9,7 @@ export async function startBentoConnect(nextPath: string): Promise<void> {
   const returnUrl = new URL("/connect", window.location.origin);
   returnUrl.searchParams.set("next", nextPath);
 
-  const { url } = await bentoPublic.public.externalLink.getLinkUrl({
+  const { url } = await getBentoPublic().public.externalLink.getLinkUrl({
     returnUrl: returnUrl.toString(),
     state,
   });

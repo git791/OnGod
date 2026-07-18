@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { toBlob } from "html-to-image";
 import Receipt, { type ReceiptData } from "@/components/Receipt";
-import { bentoPublic } from "@/lib/bento";
+import { getBentoPublic } from "@/lib/bento";
 import { useStore } from "@/lib/store";
 import { motion } from "framer-motion";
 
@@ -35,7 +35,7 @@ export default function ReceiptPage() {
   const loadData = useCallback(async () => {
     try {
       // 1. Get duel info via getDuelById
-      const res = await bentoPublic.public.duels.getById({ duelId });
+      const res = await getBentoPublic().public.duels.getById({ duelId });
       const d = (res as Record<string, unknown>).duel ? ((res as Record<string, unknown>).duel as Record<string, unknown>) : (res as Record<string, unknown>);
 
       const title = d.question ?? d.title ?? meta?.claimText ?? "Callout";
@@ -54,7 +54,7 @@ export default function ReceiptPage() {
       let openingYesPct = meta?.openingYesPct ?? 50;
       let closingYesPct = 50;
       try {
-        const raw = await bentoPublic.public.publicBets.getYesPercentageSnapshots(duelId);
+        const raw = await getBentoPublic().public.publicBets.getYesPercentageSnapshots(duelId);
         const snaps = Array.isArray(raw) ? raw : [];
         if (snaps.length > 0) {
           const first = snaps[0] as Record<string, unknown>;
@@ -101,7 +101,7 @@ export default function ReceiptPage() {
       // 3. Leaderboard — getTradersPnl
       try {
         // leaderboard.getTradersPnl may take duelId as string
-        const lb = await bentoPublic.public.leaderboard.getTradersPnl({ duelId });
+        const lb = await getBentoPublic().public.leaderboard.getTradersPnl({ duelId });
         const entries: LeaderEntry[] = Array.isArray(lb)
           ? lb.map((e: Record<string, unknown>) => ({
               address: String(e.address ?? "???"),

@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useStore } from "@/lib/store";
-import { bentoPublic, createAuthedSdk } from "@/lib/bento";
+import { getBentoPublic, createAuthedSdk } from "@/lib/bento";
 import OddsBar from "@/components/OddsBar";
 import Countdown from "@/components/Countdown";
 import { motion } from "framer-motion";
@@ -70,7 +70,7 @@ export default function CalloutPage() {
   // Load duel
   const loadDuel = useCallback(async () => {
     try {
-      const res = await bentoPublic.public.duels.getById({ duelId, inviteCode });
+      const res = await getBentoPublic().public.duels.getById({ duelId, inviteCode });
       const d = (res as Record<string, unknown>).duel ?? res;
       const dr = d as Record<string, unknown>;
       const closesRaw = dr.endTime ?? dr.closesAt;
@@ -89,7 +89,7 @@ export default function CalloutPage() {
   const pollOdds = useCallback(async () => {
     try {
       // getYesPercentageSnapshots takes duelId as plain string
-      const raw = await bentoPublic.public.publicBets.getYesPercentageSnapshots(duelId);
+      const raw = await getBentoPublic().public.publicBets.getYesPercentageSnapshots(duelId);
       // raw is JsonRecord — handle as array or object
       const snaps = Array.isArray(raw) ? raw : (raw as Record<string, unknown>).snapshots ?? [];
       if (Array.isArray(snaps) && snaps.length > 0) {
