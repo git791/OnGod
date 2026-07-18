@@ -2,7 +2,7 @@
 
 > *Turn any claim your friend group makes in the group chat into a real-stakes prediction market in ten seconds — then let the odds settle it, and mail everyone a receipt.*
 
-**Live demo:** [ongod.vercel.app](https://ongod.vercel.app)
+**Live demo:** https://on-god-eta.vercel.app/
 
 ---
 
