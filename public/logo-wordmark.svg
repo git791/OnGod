@@ -1,0 +1,27 @@
+<svg width="320" height="100" viewBox="0 0 320 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="OnGod logo">
+  <defs>
+    <mask id="perf-logo">
+      <circle cx="34" cy="50" r="27" fill="#fff"/>
+      <g fill="#000">
+        <circle cx="34" cy="23" r="2.3"/>
+        <circle cx="48" cy="26.6" r="2.3"/>
+        <circle cx="58" cy="36.6" r="2.3"/>
+        <circle cx="61" cy="50" r="2.3"/>
+        <circle cx="58" cy="63.4" r="2.3"/>
+        <circle cx="48" cy="73.4" r="2.3"/>
+        <circle cx="34" cy="77" r="2.3"/>
+        <circle cx="20" cy="73.4" r="2.3"/>
+        <circle cx="10" cy="63.4" r="2.3"/>
+        <circle cx="7" cy="50" r="2.3"/>
+        <circle cx="10" cy="36.6" r="2.3"/>
+        <circle cx="20" cy="26.6" r="2.3"/>
+      </g>
+    </mask>
+  </defs>
+  <circle cx="34" cy="50" r="27" fill="#C8102E" mask="url(#perf-logo)"/>
+  <path d="M22 51 L30 59 L47 38" fill="none" stroke="#F4ECD8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g transform="rotate(-3 190 50)">
+    <text x="76" y="63" font-family="Anton, Impact, sans-serif" font-size="42" fill="#211D17" letter-spacing="1">ON GOD</text>
+    <path d="M77 72 Q140 78 180 73 Q230 68 300 74" fill="none" stroke="#1F6F5C" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>

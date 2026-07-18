@@ -1,0 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Permanent+Marker&display=swap');
+
+@import "tailwindcss";
+/* ─── Design Tokens (Ticket Stub) ────────────────────────── */
+:root {
+  --ticket-cream: #F4ECD8;
+  --soot-ink: #211D17;
+  --cherry-stamp: #C8102E;
+  --marigold-ticket: #E8A13D;
+  --varsity-teal: #1F6F5C;
+  --ash: #8C8474;
+
+  --font-display: "Anton", sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "Courier Prime", monospace;
+  --font-accent: "Permanent Marker", cursive;
+}
+
+/* ─── Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { height: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ticket-cream);
+  color: var(--soot-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+/* Texture classes */
+.app-background {
+  background-color: var(--ticket-cream);
+}
+.app-background::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  filter: url(#grain-texture);
+  mix-blend-mode: multiply;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 9999;
+}
+.halftone-bg {
+  position: relative;
+}
+.halftone-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  filter: url(#halftone-dots);
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+/* ─── Utilities ────────────────────────────────────────── */
+.bg-cream      { background: var(--ticket-cream); }
+.bg-soot       { background: var(--soot-ink); }
+.text-cherry   { color: var(--cherry-stamp); }
+.text-marigold { color: var(--marigold-ticket); }
+.text-teal     { color: var(--varsity-teal); }
+.text-ash      { color: var(--ash); }
+.text-soot     { color: var(--soot-ink); }
+
+.font-display { font-family: var(--font-display); }
+.font-body    { font-family: var(--font-body); }
+.font-mono    { font-family: var(--font-mono); }
+.font-accent  { font-family: var(--font-accent); }
+
+/* ─── Card glass surface ───────────────────────────────── */
+.card {
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(33, 29, 23, 0.1);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 rgba(33, 29, 23, 0.05);
+}
+
+/* ─── Pill buttons ─────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  letter-spacing: 0.01em;
+  padding: 14px 28px;
+  text-decoration: none;
+  /* Transitions now handled by framer-motion mostly, but keep baseline */
+  transition: opacity 120ms ease;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-cherry {
+  background: var(--cherry-stamp);
+  color: var(--ticket-cream);
+  border: 2px solid var(--soot-ink);
+  box-shadow: 2px 2px 0 var(--soot-ink);
+}
+
+.btn-teal {
+  background: var(--varsity-teal);
+  color: var(--ticket-cream);
+  border: 2px solid var(--soot-ink);
+  box-shadow: 2px 2px 0 var(--soot-ink);
+}
+
+.btn-marigold {
+  background: var(--marigold-ticket);
+  color: var(--soot-ink);
+  border: 2px solid var(--soot-ink);
+  box-shadow: 2px 2px 0 var(--soot-ink);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--soot-ink);
+  border: 1.5px dashed var(--ash);
+}
+
+/* ─── Input fields ─────────────────────────────────────── */
+.input {
+  width: 100%;
+  background: rgba(255,255,255,0.5);
+  border: 1.5px solid var(--ash);
+  border-radius: 8px;
+  color: var(--soot-ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+.input::placeholder { color: var(--ash); }
+.input:focus { border-color: var(--varsity-teal); }
+
+/* ─── Top nav bar ──────────────────────────────────────── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--soot-ink);
+  background: var(--ticket-cream);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Page wrapper ─────────────────────────────────────── */
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 20px 100px;
+  min-height: 100dvh;
+}
+
+/* ─── Odds bar flash ───────────────────────────────────── */
+@keyframes flashPulse {
+  0%   { box-shadow: 0 0 0 2px var(--varsity-teal); }
+  50%  { box-shadow: 0 0 0 4px rgba(31, 111, 92, 0.4); }
+  100% { box-shadow: none; }
+}
+.odds-flash { animation: flashPulse 400ms ease-out; }
+
+/* ─── Receipt unspool animation ────────────────────────── */
+@keyframes unspool {
+  0%   { transform: scaleY(0) translateY(-50%); opacity: 0; }
+  60%  { transform: scaleY(1.04) translateY(0); opacity: 1; }
+  100% { transform: scaleY(1) translateY(0); opacity: 1; }
+}
+.receipt-unspool {
+  transform-origin: top center;
+  animation: unspool 600ms cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+
+/* ─── Verdict stamp ────────────────────────────────────── */
+@keyframes stamp {
+  0%   { transform: rotate(-3deg) scale(1.5); opacity: 0; }
+  70%  { transform: rotate(-3deg) scale(0.95); opacity: 1; }
+  100% { transform: rotate(-3deg) scale(1); opacity: 1; }
+}
+.stamp-anim { animation: stamp 400ms 300ms both; }
+
+/* ─── Spin loader ──────────────────────────────────────── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--ash);
+  border-top-color: var(--soot-ink);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+/* ─── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
