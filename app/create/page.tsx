@@ -72,38 +72,40 @@ export default function CreateCallout() {
     setDemoFallback(false);
 
     try {
-      await mintTestCredits(jwt, walletAddress);
       const sdk = createAuthedSdk(jwt);
-      // Private pods skip public-market bootstrapping. Bento requires a short
-      // on-chain lead time; eight minutes also leaves enough room before a
-      // user-selected deadline for the child duel to be valid.
       const startTime = new Date(Date.now() + 8 * 60 * 1000).toISOString();
       const endTime = new Date(deadline).toISOString();
 
-      /**
-       * Strategy: Use createParentMarket with markets[] to bundle
-       * the pod creation + duel creation in one API call.
-       */
-      const duelResult = await sdk.user.createDuel(
-        {
-          question: claim,
-          type: "prediction" as const,
-          category: "Football",
-          optionA: "Yes",
-          optionB: "No",
-          startTime: startTime,
-          endTime,
-          privacyAccess: "private",
-          collateralMode: "credits" as const,
-        },
-        { requestId: `duel-${Date.now()}` }
+      const timeoutMs = 5000;
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error("Bento network timeout")), timeoutMs)
       );
 
-      // Response is MutationAccepted — raw is CreateParentMarketResponseDto
-      const raw = duelResult.raw as typeof duelResult.raw & {
-        inviteCode?: string;
-        walletAddress?: string;
-      };
+      // Run minting with a strict timeout
+      await Promise.race([
+        mintTestCredits(jwt, walletAddress),
+        timeoutPromise
+      ]);
+
+      const duelResult = (await Promise.race([
+        sdk.user.createDuel(
+          {
+            question: claim,
+            type: "prediction" as const,
+            category: "Football",
+            optionA: "Yes",
+            optionB: "No",
+            startTime: startTime,
+            endTime,
+            privacyAccess: "private",
+            collateralMode: "credits" as const,
+          },
+          { requestId: `duel-${Date.now()}` }
+        ),
+        timeoutPromise
+      ])) as any;
+
+      const raw = duelResult.raw;
       const duelId = raw.duelId;
       let inviteCode = raw.inviteCode;
       if (!duelId) throw new Error("No duelId returned");
