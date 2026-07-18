@@ -62,6 +62,7 @@ export default function CalloutPage() {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const meta = myCallouts.find((c) => c.duelId === duelId);
+  const isDemo = duelId.startsWith("demo-");
   const isCreator = !!(walletAddress && duel?.creatorAddress &&
     duel.creatorAddress.toLowerCase() === walletAddress.toLowerCase());
   const isResolved = duel?.status === "resolved" || duel?.status === "settled";
@@ -69,6 +70,15 @@ export default function CalloutPage() {
 
   // Load duel
   const loadDuel = useCallback(async () => {
+    if (isDemo && meta) {
+      setDuel({
+        title: meta.claimText,
+        endTime: new Date(meta.deadline).toISOString(),
+        status: "open",
+        creatorAddress: walletAddress ?? undefined,
+      });
+      return;
+    }
     try {
       const res = await getBentoPublic().public.duels.getById({ duelId, inviteCode });
       const d = (res as Record<string, unknown>).duel ?? res;
@@ -83,10 +93,11 @@ export default function CalloutPage() {
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : "Failed to load callout");
     }
-  }, [duelId, meta]);
+  }, [duelId, isDemo, meta, walletAddress]);
 
   // Poll odds
   const pollOdds = useCallback(async () => {
+    if (isDemo) return;
     try {
       // getYesPercentageSnapshots takes duelId as plain string
       const raw = await getBentoPublic().public.publicBets.getYesPercentageSnapshots(duelId);
@@ -100,7 +111,7 @@ export default function CalloutPage() {
     } catch {
       // silently ignore
     }
-  }, [duelId]);
+  }, [duelId, isDemo]);
 
   useEffect(() => {
     if (!duelId) return;
@@ -196,6 +207,13 @@ export default function CalloutPage() {
     setBetError(null);
 
     try {
+      if (isDemo) {
+        setYesPct((current) => Math.max(5, Math.min(95, current + (betSide === 0 ? 7 : -7))));
+        setBetSuccess(true);
+        setBetSide(null);
+        setEstimateData(null);
+        return;
+      }
       const sdk = createAuthedSdk(jwt);
       await sdk.user.placeBet({
         duelId,
@@ -226,12 +244,11 @@ export default function CalloutPage() {
 
     try {
       // Resolve via direct API call
-      const BASE = process.env.NEXT_PUBLIC_BENTO_BASE_URL ?? "https://markets.bento.fun";
+      const BASE = "/api/markets";
       await fetch(`${BASE}/bento/user/duels/resolve`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-builder-api-key": process.env.NEXT_PUBLIC_BENTO_BUILDER_KEY ?? "",
           Authorization: `Bearer ${jwt}`,
         },
         body: JSON.stringify({ duelId, outcome }),

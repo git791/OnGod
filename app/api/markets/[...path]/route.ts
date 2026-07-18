@@ -1,0 +1,40 @@
+import { NextRequest } from "next/server";
+
+const BENTO_BASE_URL = process.env.NEXT_PUBLIC_BENTO_BASE_URL ?? "https://internal-server.bento.fun";
+const BUILDER_KEY = process.env.BENTO_BUILDER_API_KEY ?? process.env.NEXT_PUBLIC_BENTO_BUILDER_KEY;
+
+async function proxy(request: NextRequest, context: { params: Promise<{ path: string[] }> }) {
+  if (!BUILDER_KEY) {
+    return Response.json({ error: "Bento Builder API key is not configured on the server." }, { status: 500 });
+  }
+
+  const { path } = await context.params;
+  const incomingUrl = new URL(request.url);
+  const upstreamUrl = new URL(`${BENTO_BASE_URL}/${path.join("/")}`);
+  upstreamUrl.search = incomingUrl.search;
+
+  const headers = new Headers(request.headers);
+  headers.delete("host");
+  headers.delete("content-length");
+  headers.set("x-builder-api-key", BUILDER_KEY);
+
+  const method = request.method;
+  const body = method === "GET" || method === "HEAD" ? undefined : await request.arrayBuffer();
+  const upstream = await fetch(upstreamUrl, {
+    method,
+    headers,
+    body,
+    redirect: "manual",
+  });
+
+  const responseHeaders = new Headers(upstream.headers);
+  responseHeaders.delete("content-encoding");
+  responseHeaders.delete("content-length");
+  return new Response(upstream.body, { status: upstream.status, headers: responseHeaders });
+}
+
+export const GET = proxy;
+export const POST = proxy;
+export const PUT = proxy;
+export const PATCH = proxy;
+export const DELETE = proxy;

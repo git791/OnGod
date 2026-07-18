@@ -16,7 +16,7 @@ const BASE_URL = isClient
   ? "/api/markets"
   : (process.env.NEXT_PUBLIC_BENTO_BASE_URL ?? "https://internal-server.bento.fun");
 
-const API_KEY = process.env.NEXT_PUBLIC_BENTO_BUILDER_KEY ?? "";
+const API_KEY = "server-proxy";
 
 function buildMessage(address: string, timestamp: string): string {
   return `Bento.fun Login\nTimestamp: ${timestamp}\nWallet: ${address}`;

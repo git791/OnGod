@@ -10,10 +10,6 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/markets/:path*',
-        destination: 'https://internal-server.bento.fun/:path*',
-      },
-      {
         source: '/api/tournaments/:path*',
         destination: 'https://bento-fun-tournaments-backend-3nku.onrender.com/:path*',
       },

@@ -10,7 +10,9 @@ const TOURNAMENTS_URL = isClient
   ? "/api/tournaments"
   : (process.env.NEXT_PUBLIC_BENTO_TOURNAMENTS_URL ?? "https://bento-fun-tournaments-backend-3nku.onrender.com");
 
-const API_KEY = process.env.NEXT_PUBLIC_BENTO_BUILDER_KEY ?? "";
+// Browser requests go through our server-side markets proxy. The proxy injects
+// the real Builder key, while the SDK only needs a non-empty placeholder.
+const API_KEY = "server-proxy";
 
 let publicSdk: ReturnType<typeof createBentoSdk> | null = null;
 

@@ -39,6 +39,7 @@ export default function CreateCallout() {
     duelId: string;
     inviteCode: string;
   } | null>(null);
+  const [demoFallback, setDemoFallback] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const minDeadline = new Date(Date.now() + 35 * 60 * 1000)
@@ -68,6 +69,7 @@ export default function CreateCallout() {
 
     setLoading(true);
     setError(null);
+    setDemoFallback(false);
 
     try {
       await mintTestCredits(jwt, walletAddress);
@@ -133,8 +135,22 @@ export default function CreateCallout() {
       setResult({ inviteLink, duelId, inviteCode });
     } catch (e: unknown) {
       console.error("[OnGod] Bento callout creation failed", e);
-      const msg = formatBentoError(e);
-      setError(msg);
+      // Keep the demo usable when Bento testnet creation is unavailable.
+      const duelId = `demo-${Date.now()}`;
+      const inviteCode = `DEMO${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
+      const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+      const inviteLink = `${baseUrl}/callout/${duelId}`;
+      addCallout({
+        duelId,
+        claimText: claim,
+        deadline,
+        inviteCode,
+        inviteLink,
+        openingYesPct: 50,
+      });
+      setResult({ duelId, inviteCode, inviteLink });
+      setDemoFallback(true);
+      setError(null);
     } finally {
       setLoading(false);
     }
@@ -161,6 +177,11 @@ export default function CreateCallout() {
           <p style={{ color: "var(--ash)", marginBottom: "32px", fontSize: "15px" }}>
             Send this link to your squad. They land straight on the bet card.
           </p>
+          {demoFallback && (
+            <p style={{ color: "var(--marigold-ticket)", fontSize: "13px", marginBottom: "16px" }}>
+              Demo mode — Bento testnet creation is unavailable, so this callout is local only.
+            </p>
+          )}
           <div className="card halftone-bg" style={{ padding: "16px", marginBottom: "20px", wordBreak: "break-all" }}>
             <p className="font-mono" style={{ fontSize: "13px", color: "var(--varsity-teal)", marginBottom: "12px", position: "relative" }}>
               {result.inviteLink}
