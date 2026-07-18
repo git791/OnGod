@@ -16,6 +16,8 @@ async function proxy(request: NextRequest, context: { params: Promise<{ path: st
   const headers = new Headers(request.headers);
   headers.delete("host");
   headers.delete("content-length");
+  headers.delete("origin");
+  headers.delete("referer");
   headers.set("x-builder-api-key", BUILDER_KEY);
 
   const method = request.method;

@@ -5,8 +5,7 @@ async function main() {
       method: "POST",
       headers: {
         "x-builder-api-key": "bnt_live_3bb11fd4_0fce953f5b872fba7f60ed75",
-        "Content-Type": "application/json",
-        "Origin": "http://127.0.0.1:3000"
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ returnUrl: "http://127.0.0.1:3000/connect", state: "123" })
     });
